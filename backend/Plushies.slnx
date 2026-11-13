@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Plushies.Api/Plushies.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Plushies.Tests/Plushies.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/ChitChatsSimulator/ChitChatsSimulator.csproj" />
+  </Folder>
+</Solution>

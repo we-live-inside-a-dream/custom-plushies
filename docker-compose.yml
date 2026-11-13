@@ -1,0 +1,40 @@
+# docker compose up --build   →   shop on http://localhost:8080, admin on http://localhost:8080/admin
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: plushies
+      POSTGRES_USER: plushies
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plushies -d plushies"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__Plushies: Host=db;Database=plushies;Username=plushies;Password=${POSTGRES_PASSWORD}
+      Jwt__Key: ${JWT_KEY:?set JWT_KEY in .env}
+      Seed__AdminEmail: ${ADMIN_EMAIL:-}
+      Seed__AdminPassword: ${ADMIN_PASSWORD:-}
+      Seed__DemoData: ${SEED_DEMO_DATA:-false}
+      Payments__AllowTestGateway: ${PAYMENTS_ALLOW_TEST_GATEWAY:-false}
+      ChitChats__BaseUrl: ${CHITCHATS_BASE_URL:-https://staging.chitchats.com/api/v1}
+      ChitChats__ClientId: ${CHITCHATS_CLIENT_ID:-}
+      ChitChats__AccessToken: ${CHITCHATS_ACCESS_TOKEN:-}
+      ChitChats__DefaultHsTariffCode: ${CHITCHATS_DEFAULT_HS_TARIFF_CODE:-}
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  db-data:
+  uploads:
